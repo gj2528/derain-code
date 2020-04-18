@@ -113,28 +113,30 @@ def loss_ssim(img1, img2, batchsize, c_dims):
 
 def edge_compute(x):   #tensorflow
     print(x,'x')
-    x_diffx = np.abs(x[:, :, 1:, :] - x[:, :, :-1, :])
+    x_diffx = np.abs(x[:, 1:, :] - x[:, :-1, :])
     print(x_diffx,'x_diffx')
-    x_diffy = np.abs(x[:, 1:, :, :] - x[:, :-1, :, :])
+    x_diffy = np.abs(x[1:, :, :] - x[:-1, :, :])
     print(x_diffy, 'x_diffy')
     in_shape = x.shape
     print(in_shape,'in_shape')
-    N, H, W, C = in_shape
+    H, W, C = in_shape
     y = np.zeros(shape=in_shape, dtype=float)
-    y1_x_diffx = x_diffx
-    for i in range(W-1):
-        y[:, :, i+1, :] = np.add(y[:, :, i+1, :], x_diffx)
-    # y[:, :, 1:, :] += x_diffx
-    print(y)
-    for i in range(W-1):
-        y[:, :, i, :] = x_diffx[:, :, i, :]
-    # y[:, :, :-1, :] += x_diffx
-    print(y)
-    y[:, 1:, :, :] += x_diffy
-    print(y)
-    y[:, :-1, :, :] += x_diffy
-    print(y)
-    y = tf.reduce_sum(y, -1, keepdim=True) / 3
+    y[:, 1:, :] = x_diffx
+    print(y, 'y[:, i+1, :]')
+    y[:, :-1, :] += x_diffx
+    # for i in range(W-1):
+    #     y[:, i+1, :] = np.add(y[:, i+1, :], x_diffx[:, i, :])
+
+
+    # for i in range(W-1):
+    #     y[:, i, :] = np.add(y[:, i, :], x_diffx[:, i, :])
+
+    print(y,'y[:, i, :]')
+    y[1:, :, :] += x_diffy
+    print(y,'y[1:, :, :]')
+    y[:-1, :, :] += x_diffy
+    print(y,'y[:-1, :, :]')
+    y = np.sum(y, axis=-1) / 3
     y /= 4
     return y
 
