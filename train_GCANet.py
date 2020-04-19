@@ -19,11 +19,11 @@ tf.reset_default_graph()
 
 ################# Network parameters ##################
 num_feature = 64  # number of feature maps
-num_channels = 3  # number of inputs's channels
+num_channels = 3  # number of outputs's channels
 patch_height = 128  # training patch height
 patch_width = 128  # training patch width
-learning_rate = 0.001  # learning rate
-iterations = 60000  # number of iterations
+learning_rate = 0.01  # learning rate
+iterations = 100010  # number of iterations
 counter = 0  # start step of training
 batch_size = 2  # number of batch
 save_model_path = './checkpoint/GCANet_model/'  # path to save model
@@ -32,7 +32,7 @@ save_sample_path = './sample/'  # path to save sample
 model_name = 'GCANet_model'  # name of model
 tfrec_filename_train = './TrainData/Rain_train.tfrecords'  # the path of tfrecords for training
 tfrec_filename_val = './TrainData/Rain_val.tfrecords'  # the path of tfrecords for validation
-load_model = True  # flag of load_model
+load_model = False  # flag of load_model
 checkpoint_dir = './checkpoint/GCANet_model/'
 ######################################################
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     rate = tf.train.exponential_decay(learning_rate=learning_rate, global_step=global_step, decay_steps=10000,
                                       decay_rate=0.1,
                                       staircase=True)
-    optim = tf.train.RMSPropOptimizer(learning_rate=rate).minimize(loss_train, var_list=t_vars, global_step=global_step)
+    optim = tf.train.AdamOptimizer(learning_rate=rate).minimize(loss_train, var_list=t_vars, global_step=global_step)
     saver = tf.train.Saver(max_to_keep=5)
 
     if not os.path.exists(save_log_path):
@@ -102,12 +102,13 @@ if __name__ == '__main__':
                 loss_train_value = sess.run(loss_train)
                 print('iterations:[%4d/%4d], time:%4.4f \nloss_train:%.8f' % (
                     itr, iterations, time.time() - start_time, loss_train_value))
-            if np.mod(itr, 200) == 0:
+            if np.mod(itr, 10) == 0:
                 rain_img_val_value, clean_img_val_value, y_val_value = sess.run(
                     [rain_img_val, clean_img_val, y_val])
-                save_images_(rain_img_val_value, [1, 1], './{}/rain_img_val{:04d}.png'.format(save_sample_path, itr))
+                # save_images_(rain_img_val_value, [1, 1], './{}/rain_img_val{:04d}.png'.format(save_sample_path, itr))
                 save_images_(clean_img_val_value, [1, 1], './{}/clean_img_val{:04d}.png'.format(save_sample_path, itr))
                 save_images_(y_val_value, [1, 1], './{}/derain_val{:04d}.png'.format(save_sample_path, itr))
+            if np.mod(itr, 100) == 0:
                 writer.add_summary(summary_str_loss, itr)
                 saver.save(sess, os.path.join(save_model_path, model_name), global_step=itr)
         coord.request_stop()

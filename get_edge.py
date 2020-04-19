@@ -33,12 +33,16 @@ for i in range(int(0.9 * num)):
     print(rain_img)
     print(rain_img.shape)
     edge_img = edge_compute(rain_img)
+    edge_img = edge_img.astype(np.uint8)
     print(edge_img)
     print(edge_img.shape,'edge.shape')
     rain_img_raw = rain_img.astype(np.uint8)
     print(rain_img_raw,'rain_img_raw')
     rain_concat = np.concatenate([rain_img_raw,edge_img], 2)
+    print(rain_concat, rain_concat)
+    print(rain_concat.shape, 'rain_concat.shape')
     img_raw = rain_concat.tobytes()
+    # print(img_raw.shape, 'img_raw')
 
     clean_img = plt.imread(deep_joint_rain_train_data + 'clean_image/' + clean_name) * 255.0  ## path of gt img
     clean_img_raw = clean_img.astype(np.uint8)
@@ -65,6 +69,7 @@ for i in range(int(0.9 * num), num):
 
     rain_img = plt.imread(deep_joint_rain_train_data + 'rain_image/' + im_name) * 255.0
     edge_img = edge_compute(rain_img)
+    edge_img = edge_img.astype(np.uint8)
     rain_img_raw = rain_img.astype(np.uint8)
     rain_concat = np.concatenate([rain_img_raw, edge_img], 2)
     img_raw = rain_concat.tobytes()
