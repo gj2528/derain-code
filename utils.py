@@ -124,19 +124,12 @@ def edge_compute(x):   #tensorflow
     y[:, 1:, :] = x_diffx
     print(y, 'y[:, i+1, :]')
     y[:, :-1, :] += x_diffx
-    # for i in range(W-1):
-    #     y[:, i+1, :] = np.add(y[:, i+1, :], x_diffx[:, i, :])
-
-
-    # for i in range(W-1):
-    #     y[:, i, :] = np.add(y[:, i, :], x_diffx[:, i, :])
-
     print(y,'y[:, i, :]')
     y[1:, :, :] += x_diffy
     print(y,'y[1:, :, :]')
     y[:-1, :, :] += x_diffy
     print(y,'y[:-1, :, :]')
-    y = np.sum(y, axis=-1) / 3
+    y = np.sum(y, axis=-1, keepdims=True) / 3
     y /= 4
     return y
 
